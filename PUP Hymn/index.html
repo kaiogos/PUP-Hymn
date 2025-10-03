@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PUP Hymn</title>
+
+  <style>
+
+    body {
+      background-image: url('Assets/Background.png');
+      background-size: cover;
+      margin: 0; /* For no additional spacing*/
+      padding-top: 80px; /* Content starts below banner */
+      font-family: Times;
+    }
+
+    .top-banner {
+      width: 100%;
+      height: 70px;
+      display: flex;
+      align-items: center; /* Vertical align*/
+      justify-content: center; /* Horizontal align - flexboxfroggy */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0; /* Fixed to top */     
+      z-index: 1000; /* Layer on top of everything */
+    }
+
+    .logo {
+      height: 50px;
+      width: auto;
+      margin-right: 15px;
+    }
+
+    .hymn-title {
+      position: relative;
+      top: 25px;
+      text-align: center;
+      font-size: 28px;
+      color: maroon;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2); 
+    }
+
+    .lyrics-container {
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      height: 300px;
+      overflow: hidden; /* Text does not overflow */
+      position: relative;
+      width: 25%;
+      max-width: 600px;
+      padding: 10px;
+      margin: 50px auto;
+    }
+
+    .lyrics {
+      position: absolute;
+      top: -10px;
+      left: 0;
+      width: 100%;
+      transition: transform 0.3s ease-out;     
+    }
+
+    .line {
+      text-align: center;
+      margin: 10px 0; /* Top, right, bottom, left spacing between lines */
+      padding-top: 15px; /* Spacing between text & top edge of container */
+      font-size: 18px;
+      color: #333;
+      transition: color 0.3s;
+    }
+
+    .highlight {
+      color: maroon;
+      font-weight: bold;
+    }
+
+    audio {
+      display: block;
+      margin: -30px auto;
+      width: 400px;  
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }   
+    
+  </style>
+</head>
+
+  <body>
+    <div class="top-banner">
+      <img src="Assets/PUPLogo.png" alt="PUP Logo" class="logo">
+      <h2>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</h2>
+    </div>
+
+    <h1 class="hymn-title">PUP Hymn</h1>
+
+    <div class="lyrics-container">
+      <div class="lyrics" id="lyrics"></div>
+    </div>
+
+    <audio id="audio" controls>
+      <source src="Assets/Imno ng PUP (The PUP Hymn).mp3" type="audio/mpeg">
+    </audio>
+  </body>
+
+  <script>
+
+    // Get audio & lyrics
+    const audio = document.getElementById('audio');
+    const lyricsDiv = document.getElementById('lyrics');
+
+    // Array of lyrics w time stamp 
+    const lyrics = [
+      {time: 0, line: " "},
+      {time: 12, line: "Sintang Paaralan"},
+      {time: 15, line: "Tanglaw ka ng bayan"},
+      {time: 18, line: "Pandayan ng isip ng kabataan"},
+      {time: 24, line: "Kami ay dumating nang salat sa yaman"},
+      {time: 29, line: "Hanap na dunong ay iyong alay"},
+      {time: 35, line: "Ang layunin mong makatao"},
+      {time: 41, line: "Dinarangal ang Pilipino"},
+      {time: 47, line: "Ang iyong aral, diwa, adhikang taglay"},
+      {time: 52, line: "PUP, aming gabay"},
+      {time: 56, line: "Paaralang dakila"},
+      {time: 61, line: "PUP, pinagpala"},
+      {time: 68, line: "Gagamitin ang karunungan"},
+      {time: 74, line: "Mula sa iyo, para sa bayan"},
+      {time: 80, line: "Ang iyong aral, diwa, adhikang taglay"},
+      {time: 86, line: "PUP, aming gabay"},
+      {time: 89, line: "Paaralang dakila"},
+      {time: 95, line: "PUP, pinagpala"}
+    ];
+
+    // Create a div for each line and style it w the line class
+    lyrics.forEach(lyric => {
+      const line = document.createElement('div');
+      line.textContent = lyric.line;
+      line.className = 'line';
+      lyricsDiv.appendChild(line);
+    });
+    
+    // Get lines and store in list for highlighting & scrolling
+    const lines = document.querySelectorAll('.line');
+
+    // Find which lyric is to be highlighted based on time
+    function syncLyrics() {
+      const currentTime = audio.currentTime;
+      let index = lyrics.findIndex((lyric, i) =>
+        i === lyrics.length - 1 || (currentTime >= lyric.time && currentTime < lyrics[i + 1].time)
+      );
+
+    // Highlight current lyric
+      lines.forEach((line, i) => {
+        line.classList.toggle('highlight', i === index);
+      });
+
+    // Compute scrolling 
+      const lineHeight = lines[0].offsetHeight + 20; // Set height for scrolling
+      const maxOffset = (lines.length - 4) * lineHeight; // Max scroll
+      const offset = Math.min(index * lineHeight, maxOffset); // Scroll current lyric within limits
+      lyricsDiv.style.transform = `translateY(-${offset}px)`; // Scroll
+    }
+
+    audio.addEventListener('timeupdate', syncLyrics); // Update highlighted lyric and scroll as audio plays
+
+  </script>
+</body>
+</html>
